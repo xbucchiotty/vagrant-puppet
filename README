@@ -1,0 +1,31 @@
+XEBIA
+XKE-2012-09-06
+
+HANDS'ON PUPPET
+
+@Author cblonde
+@Author plopez
+@Author xbucchiotty
+
+
+
+Part 1, Prerequisites : 
+* VirtualBox
+* Vagrant
+* Gradle
+
+# Initiate the image of the box used after
+> vagrant box add lucid32-fr https://s3-eu-west-1.amazonaws.com/xebia-vagrant/package.box
+
+# To launch at the root of this project
+> vagrant up
+
+Configure the box...
+
+
+
+#TO SEE THE SOLUTION
+> git checkout PART-1-SOLUTION
+
+#TO CONTINUE
+> git merge PART-2

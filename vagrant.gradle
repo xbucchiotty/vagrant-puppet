@@ -1,0 +1,43 @@
+
+
+task init << {
+   vagrant('box add lucid32-fr https://s3-eu-west-1.amazonaws.com/xebia-vagrant/package.box');
+   vagrant('init');
+}
+
+task provision << {
+    vagrant('provision');
+}
+
+task status << {
+    vagrant("status");
+}
+task destroy << {
+   vagrant('destroy --force');
+}
+
+void vagrant(String command){
+    def vagrantCommand = "vagrant "+command;
+    logger.info("execute : "+command);
+    def p = vagrantCommand.execute(null,rootDir);
+    p.consumeProcessOutput(System.out,System.err);
+    p.waitFor();
+}
+
+void remoteGradle(String host, String command){
+    def p = new ProcessBuilder("src/main/vagrant/remoteVagrant.sh",host,"/vagrant/gradlew "+command).start();
+    p.consumeProcessOutput(System.out,System.err);
+    p.waitFor();
+}
+
+task remoteBuild << {
+    remoteGradle('dev','build');
+}
+
+tasks.addRule("Pattern: remote") { String taskName ->
+    if (taskName.startsWith("remote")) {
+        task(taskName) << {
+            remoteGradle('dev',taskName-'remote');
+        }
+    }
+}

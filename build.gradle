@@ -1,0 +1,120 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'maven'
+apply plugin: 'jetty'
+
+apply from  : 'vagrant.gradle'
+apply from  : "https://launchpad.net/gradle-release/trunk/latest/+download/apply.groovy"
+
+sourceCompatibility = 1.6
+group = 'org.xbucchiotty'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.0-rc-3'
+}
+
+repositories {
+    mavenCentral()
+    maven {url "http://repository.springsource.com/maven/bundles/release"}
+    maven {url "http://repository.springsource.com/maven/bundles/external"}
+    maven {url "http://repository.springsource.com/maven/bundles/milestone"}
+    maven {url "http://repository.springsource.com/maven/bundles/snapshot"}
+}
+
+configurations {
+    deployerJars
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            name = 'nexusDeployer'
+            configuration = configurations.deployerJars
+            repository(url: "http://nexus:8081/nexus/content/repositories/releases"){
+                authentication(userName: "deployment", password: "deployment123")
+            }
+            snapshotRepository(url: "http://nexus:8081/nexus/content/repositories/snapshots"){
+                authentication(userName: "deployment", password: "deployment123")
+            }
+        }
+    }
+}
+
+task puppetTar(type: Tar) {
+    from 'src/main/puppet'
+}
+
+artifacts {
+    archives war
+    archives puppetTar
+}
+
+dependencies {
+    def spring_version="3.0.0.RELEASE"
+    def slf4j_version="1.5.6"
+
+    compile('org.springframework:org.springframework.context:${spring_version}'){
+        exclude module:'com.springsource.org.apache.commons.logging'
+    }
+
+    compile('org.hibernate:com.springsource.org.hibernate.ejb:3.4.0.GA'){
+        exclude module:'com.springsource.org.apache.commons.logging'
+    }
+
+    compile('org.hibernate:com.springsource.org.hibernate.annotations:3.4.0.GA'){
+        exclude module:'com.springsource.org.apache.commons.logging'
+
+    }
+
+    compile('org.apache.openjpa:com.springsource.org.apache.openjpa:1.1.0'){
+        exclude module:'com.springsource.org.apache.commons.pool'
+        exclude module:'com.springsource.org.apache.commons.logging'
+    }
+
+
+    compile (
+            [group: 'org.springframework',name:'org.springframework.orm',version:spring_version],
+            [group: 'org.springframework',name:'org.springframework.oxm',version:spring_version],
+            [group: 'org.springframework',name:'org.springframework.web.servlet',version:spring_version],
+            [group: 'org.springframework',name:'org.springframework.aspects',version:spring_version],
+            [group: 'org.aspectj',name:'com.springsource.org.aspectj.weaver',version:'1.6.8.RELEASE'],
+            [group: 'org.slf4j',name:'com.springsource.slf4j.api',version:slf4j_version],
+            [group: 'org.hibernate',name:'com.springsource.org.hibernate',version:'3.3.2.GA'],
+            [group: 'javax.persistence',name:'com.springsource.javax.persistence',version:'1.0.0'],
+            [group: 'com.oracle.toplink.essentials',name:'com.springsource.oracle.toplink.essentials',version:'2.0.0.b41-beta2'],
+            [group: 'com.sun.syndication',name:'com.springsource.com.sun.syndication',version:'1.0.0'],
+            [group: 'javax.servlet',name:'com.springsource.javax.servlet.jsp.jstl',version:'1.2.0'],
+            [group: 'org.apache.taglibs',name:'com.springsource.org.apache.taglibs.standard',version:'1.1.2'],
+    )
+
+    providedCompile(
+            [group: 'javax.xml.bind',name:'com.springsource.javax.xml.bind',version:'2.1.7'],
+            [group: 'javax.servlet',name:'com.springsource.javax.servlet',version:'2.5.0'],
+            [group: 'javax.servlet',name:'com.springsource.javax.servlet.jsp',version:'2.1.0'],
+    )
+
+    runtime (
+            [group: 'org.slf4j',name:'com.springsource.slf4j.org.apache.commons.logging',version:slf4j_version],
+            [group: 'org.slf4j',name:'com.springsource.slf4j.log4j',version:slf4j_version],
+            [group: 'org.apache.log4j',name:'com.springsource.org.apache.log4j',version:'1.2.15'],
+            [group: 'org.apache.commons',name:'com.springsource.org.apache.commons.dbcp',version:'1.2.2.osgi'],
+            [group: 'org.apache.commons',name:'com.springsource.org.apache.commons.pool',version:'1.5.3'],
+            [group: 'org.hsqldb',name:'com.springsource.org.hsqldb',version:'1.8.0.9'],
+            [group: 'org.jdom',name:'com.springsource.org.jdom',version:'1.1.0'],
+            [group: 'javax.xml.bind',name:'com.springsource.javax.xml.bind',version:'2.1.7'],
+    )
+
+    testCompile(
+        [group: 'junit',name:'junit',version:'4.8.2'],
+        [group: 'org.springframework',name:'org.springframework.test',version:spring_version],
+        [group: 'javax.transaction',name:'com.springsource.javax.transaction',version:'1.1.0'],
+    )
+
+    testCompile('org.seleniumhq.selenium:selenium:2.0b1'){
+        exclude group:'org.testng'
+    }
+
+    dependencies {
+        deployerJars "org.apache.maven.wagon:wagon-http:1.0-beta-2"
+    }
+}
