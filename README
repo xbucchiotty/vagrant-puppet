@@ -9,7 +9,10 @@ HANDS'ON PUPPET
 
 
 
-Part 1, Prerequisites : 
+##############################################
+#Part 1, Configure the boxes....
+##############################################
+Prerequisites
 * VirtualBox
 * Vagrant
 * Gradle
@@ -20,12 +23,32 @@ Part 1, Prerequisites :
 # To launch at the root of this project
 > vagrant up
 
-Configure the box...
-
-
+...
 
 #TO SEE THE SOLUTION
 > git checkout PART-1-SOLUTION
 
 #TO CONTINUE
 > git merge PART-2
+
+##############################################
+#Part 2, Let's code the infra
+##############################################
+Your are given the following modules for 
+* xebia-nexus
+* xebia-deployWar
+* xebia-utils 
+
+You need to build on puppet node:
+* JDK 6
+* 1 nexus instance
+
+You need to build on node 1:
+* JDK 6
+* 1 Tomcat 6
+
+#TO SEE THE SOLUTION
+> git checkout PART-2-SOLUTION
+
+#TO CONTINUE
+> git merge PART-3
