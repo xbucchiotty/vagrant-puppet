@@ -7,7 +7,7 @@ apply from  : 'vagrant.gradle'
 apply from  : "https://launchpad.net/gradle-release/trunk/latest/+download/apply.groovy"
 
 sourceCompatibility = 1.6
-group = 'org.xbucchiotty'
+group = 'fr.xebia.xke'
 
 task wrapper(type: Wrapper) {
     gradleVersion = '1.0-rc-3'
@@ -30,10 +30,10 @@ uploadArchives {
         mavenDeployer {
             name = 'nexusDeployer'
             configuration = configurations.deployerJars
-            repository(url: "http://nexus:8081/nexus/content/repositories/releases"){
+            repository(url: "http://192.168.56.203:8081/nexus/content/repositories/releases"){
                 authentication(userName: "deployment", password: "deployment123")
             }
-            snapshotRepository(url: "http://nexus:8081/nexus/content/repositories/snapshots"){
+            snapshotRepository(url: "http://192.168.56.203:8081/nexus/content/repositories/snapshots"){
                 authentication(userName: "deployment", password: "deployment123")
             }
         }
