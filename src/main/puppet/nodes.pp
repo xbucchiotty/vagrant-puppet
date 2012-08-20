@@ -26,6 +26,14 @@ node /^node.*$/{
 		catalina_base => '/var/lib/tomcat6',
 		user => 'tomcat6',
 	}
+
+	xebia-deployWar::deploy{'deploy org.xbucchiotty:PetClinicSample':
+    groupId     => 'fr.xebia.xke',
+    artifactId  => 'vagrant-puppet',
+    version     => 'LATEST',
+    install_dir => '/usr/share/tomcat6/bin',
+}
+
 	
 }
 
