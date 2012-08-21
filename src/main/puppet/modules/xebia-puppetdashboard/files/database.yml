@@ -1,0 +1,20 @@
+production:
+  database: dashboard_production
+  username: dashboard
+  password: dashboard
+  encoding: utf8
+  adapter: mysql
+
+development:
+  database: dashboard_development
+  username: dashboard
+  password: dashboard
+  encoding: utf8
+  adapter: mysql
+
+test:
+  database: dashboard_test
+  username: dashboard
+  password: dashboard
+  encoding: utf8
+  adapter: mysql
