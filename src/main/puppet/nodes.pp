@@ -26,6 +26,13 @@ node /^node.*$/{
 		catalina_base => '/var/lib/tomcat6',
 		user => 'tomcat6',
 	}
+
+	xebia-deployWar::deploy{'deploy org.xbucchiotty:PetClinicSample':
+		groupId     => 'fr.xebia.xke',
+    		artifactId  => 'vagrant-puppet',
+    		version     => 'LATEST',
+    		install_dir => '/usr/share/tomcat6/bin',
+	}
 	
 }
 
@@ -39,8 +46,8 @@ node /^puppet.*$/{
 	stage { pre: before => Stage[main] }
 	
 	include xebia-utils
-	
-	
+	include xebia-mysqld	
+
 	
 	class{'init-nexus':
 		stage => pre
@@ -56,5 +63,25 @@ node /^puppet.*$/{
 		install_dir         => '/home/vagrant',
 		require => Class['xebia-jdk6'],
 	}
+	
+	class{'xebia-gem':
+		temporary_directory =>  '/home/vagrant',
+	}
+	
+	class { 'xebia-puppetdashboard' :
+		require => [Class['xebia-mysqld'],Class['xebia-gem']],
+		temporary_directory => '/home/vagrant',
+	}
+	
+	class{'xebia-theforeman':
+		require => [Class['xebia-mysqld'],Class['xebia-gem']],
+		temporary_directory => '/home/vagrant',
+	}
+	
+	xebia-mysqld::config::mysqldb{'vagrant':
+		user => vagrant,
+		password => vagrant,
+		host => '%'
+	}	
 	
 }
