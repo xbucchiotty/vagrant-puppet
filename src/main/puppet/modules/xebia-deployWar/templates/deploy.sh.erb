@@ -1,0 +1,60 @@
+#!/bin/bash
+
+if [ $# -gt 4 ];
+then
+   echo "ERROR: illegal number of arguments, expected 2 parameters, groupId and artifactId, plus 2 optionnal parameter with
+ value timeout (30 by default) and version (LATEST by default)"
+   exit 1
+fi
+
+NEXUS_URL="<%= nexus_url%>"
+TOMCAT_BINARIES=<%= tomcat_service%>
+PORT=<%=listen_port%>
+
+REPOSITORY_SNAPSHOT="snapshots"
+REPOSITORY_RELEASE="releases"
+GROUP_ID=${1}
+VERSION=${4:-"LATEST"}
+ARTIFACT_ID=${2}
+TIMEOUT=${3:-"30"}
+CATALINA_BASE='<%=catalina_base%>/webapps'
+
+
+# check if releases or snapshots
+if [[ $VERSION == "LATEST" || $VERSION =~ ^(.*)-SNAPSHOT$ ]];
+then
+   REPOSITORY=$REPOSITORY_SNAPSHOT
+else
+   REPOSITORY=$REPOSITORY_RELEASE
+fi
+
+/etc/init.d/$TOMCAT_BINARIES stop
+
+if [ -f ${CATALINA_BASE}/${ARTIFACT_ID}.war ];
+then
+   rm -rf "${CATALINA_BASE}/${ARTIFACT_ID}.war"
+fi
+if [ -d ${CATALINA_BASE}/${ARTIFACT_ID} ];
+then
+   rm -rf "${CATALINA_BASE}/${ARTIFACT_ID}"
+fi
+
+curl "http://${NEXUS_URL}/service/local/artifact/maven/content?g=${GROUP_ID}&a=${ARTIFACT_ID}&r=${REPOSITORY}&v=${VERSION}&e=war" --silent --show-error  --output "${CATALINA_BASE}/${ARTIFACT_ID}.war"
+echo "APPLICATION DOWNLOADED"
+
+/etc/init.d/${TOMCAT_BINARIES} start
+
+sleep $TIMEOUT
+
+HEALT_CHECK_URL="http://localhost:${PORT}/${ARTIFACT_ID}"
+
+HEALTH_CHECK_HTTP_CODE=$(curl --connect-timeout 10 --retry 10 --silent --location --show-error -w "%{http_code}" -o /dev/null ${HEALT_CHECK_URL})
+if [ $HEALTH_CHECK_HTTP_CODE -eq 200 ];
+then
+   echo "Health check url $HEALT_CHECK_URL returned expected http code '$HEALTH_CHECK_HTTP_CODE'"
+else
+   echo "FAILURE: Application deployed on tomcat server but health check '$HEALT_CHECK_URL' is KO (returned '$HEALTH_CHECK_HTTP_CODE')"
+   exit 1
+fi
+
+echo "SUCCESS: Application deployed and available on tomcat server"
