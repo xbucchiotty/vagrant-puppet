@@ -19,7 +19,7 @@ class xebia-gem($temporary_directory="/tmp") {
         source                  => 'http://production.cf.rubygems.org/rubygems/rubygems-1.3.7.tgz',
         wget_timeout            => 9000,
         installation_directory  => "${temporary_directory}",
-        temporary_file_name     => 'rubygems-1.3.7.tgz ',
+        temporary_file_name     => 'rubygems-1.3.7.tgz',
         destination             => "${temporary_directory}/rubygems-1.3.7/",
     }
 
@@ -27,12 +27,7 @@ class xebia-gem($temporary_directory="/tmp") {
         command => '/usr/bin/ruby setup.rb',
         cwd => "${temporary_directory}-1.3.7",
         refreshonly => true,
-        notify =>  Exec['updates /usr/bin/gems'],
-    }
-
-    exec{'updates /usr/bin/gems':
-        command => '/usr/bin/update-alternatives --install /usr/bin/gem gem /usr/bin/gem1.8 1',
-        refreshonly => true,
+        #notify =>  Exec['updates /usr/bin/gems'],
     }
 
 }

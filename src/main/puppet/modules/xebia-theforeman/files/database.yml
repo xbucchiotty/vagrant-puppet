@@ -1,0 +1,6 @@
+production:
+  database: foreman
+  username: foreman
+  password: foreman
+  encoding: utf8
+  adapter: mysql

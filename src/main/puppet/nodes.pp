@@ -1,9 +1,3 @@
-class init{
-		exec { 'apt-get update':
-			command => '/usr/bin/apt-get update',
-		}
-}
-
 node /^node.*$/{
 
 	include xebia-jdk6,xebia-tomcat6
@@ -27,7 +21,7 @@ node /^node.*$/{
 		user => 'tomcat6',
 	}
 
-	xebia-deployWar::deploy{'deploy org.xbucchiotty:PetClinicSample':
+	xebia-deployWar::deploy{'deploy application':
 		groupId     => 'fr.xebia.xke',
     		artifactId  => 'vagrant-puppet',
     		version     => 'LATEST',
@@ -36,8 +30,8 @@ node /^node.*$/{
 	
 }
 
-class init-nexus{
-	xebia-utils::aptget::update{'nexus-aptgetupdate':
+class init{
+	xebia-utils::aptget::update{'puppet-aptgetupdate':
 		refreshonly => false,
 	}
 }
@@ -49,13 +43,11 @@ node /^puppet.*$/{
 	include xebia-mysqld	
 
 	
-	class{'init-nexus':
+	class{'init':
 		stage => pre
 	}
 		
-	class { 'xebia-jdk6' :
-		require => Exec['apt-get update'],
-	}
+	include 'xebia-jdk6'
 	
 	class { 'xebia-nexus' :
 		nexus_version       =>  "2.0.5",
@@ -73,10 +65,10 @@ node /^puppet.*$/{
 		temporary_directory => '/home/vagrant',
 	}
 	
-	class{'xebia-theforeman':
-		require => [Class['xebia-mysqld'],Class['xebia-gem']],
-		temporary_directory => '/home/vagrant',
-	}
+	#class{'xebia-theforeman':
+	#	require => [Class['xebia-mysqld'],Class['xebia-gem']],
+	#	temporary_directory => '/home/vagrant',
+	#}
 	
 	xebia-mysqld::config::mysqldb{'vagrant':
 		user => vagrant,

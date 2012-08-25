@@ -5,7 +5,7 @@ START=yes
 DASHBOARD_HOME=/usr/share/puppet-dashboard
 
 # User which runs the puppet-dashboard program:
-DASHBOARD_USER=www-data
+DASHBOARD_USER=vagrant
 
 # Ruby version to run the puppet-dashboard as:
 DASHBOARD_RUBY=/usr/bin/ruby
