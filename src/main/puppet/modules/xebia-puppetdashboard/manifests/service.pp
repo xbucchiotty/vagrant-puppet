@@ -10,4 +10,16 @@ class xebia-puppetdashboard::service{
         ensure => running,
         require => File['/etc/default/puppet-dashboard'],
     }
+    
+	file{'/etc/default/puppet-dashboard-workers':
+        ensure => present,
+        source => 'puppet:///modules/xebia-puppetdashboard/puppet-dashboard-workers',
+        require => Class['xebia-puppetdashboard::install']
+    }
+    
+    service{'puppet-dashboard-workers':
+        ensure => running,
+        require => File['/etc/default/puppet-dashboard-workers'],
+    }    
+    
 }

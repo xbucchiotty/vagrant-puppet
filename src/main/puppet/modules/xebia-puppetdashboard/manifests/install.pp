@@ -6,9 +6,35 @@ class xebia-puppetdashboard::install{
         require => [Class['xebia-puppetdashboard::prerequisites'],Xebia-utils::Aptget::Update['puppetdashboard-aptgetupdate']]
     }
 
+	file{'/usr/share/puppet-dashboard':
+    	ensure => directory,
+    	owner => vagrant,
+    	group => vagrant,
+        require => Package['puppet-dashboard'],
+        recurse => true,
+    }
+    
+    file{'/etc/puppet-dashboard':
+    	ensure => directory,
+    	owner => vagrant,
+    	group => vagrant,
+        require => Package['puppet-dashboard'],
+        recurse => true,
+    }
+
     file{'/etc/puppet-dashboard/database.yml':
             ensure => present,
             source => 'puppet:///modules/xebia-puppetdashboard/database.yml',
+           	owner => vagrant,
+	    	group => vagrant,
+            require => Package['puppet-dashboard']
+    }
+
+    file{'/etc/puppet-dashboard/settings.yml':
+            ensure => present,
+            source => 'puppet:///modules/xebia-puppetdashboard/settings.yml',
+                owner => vagrant,
+                group => vagrant,
             require => Package['puppet-dashboard']
     }
 

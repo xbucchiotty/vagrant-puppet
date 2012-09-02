@@ -17,7 +17,7 @@ class xebia-puppetdashboard::prerequisites($temporary_directory = '/tmp'){
     exec{'apt-key apt.puppetlabs.com/pubkey.org':
         command => '/usr/bin/gpg -a --export 4BD6EC30 | /usr/bin/apt-key add -',
         require => Exec['import apt.puppetlabs.com/pubkey.org'],
-        notify => Xebia-utils::Aptget::Update['puppetdashboard-aptgetupdate'],
+        notify => Xebia-utils::Aptget::Update['foreman-aptgetupdate'],
         refreshonly => true,
     }
 
@@ -25,7 +25,7 @@ class xebia-puppetdashboard::prerequisites($temporary_directory = '/tmp'){
         ensure =>present,
         content => 'deb http://apt.puppetlabs.com/ lucid main',
         require => Exec['apt-key apt.puppetlabs.com/pubkey.org'],
-        notify => Xebia-utils::Aptget::Update['puppetdashboard-aptgetupdate'],
+        notify => Xebia-utils::Aptget::Update['foreman-aptgetupdate'],
     }
 
 }

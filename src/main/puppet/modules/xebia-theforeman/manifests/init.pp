@@ -1,9 +1,16 @@
 class xebia-theforeman($temporary_directory = '/tmp') {
+
+	xebia-utils::aptget::update{'foreman-aptgetupdate':
+    }
+
     class{'xebia-theforeman::prerequisites':
         temporary_directory => $temporary_directory,
-        require => Class['xebia-gem']
+        notify => Xebia-utils::Aptget::Update['foreman-aptgetupdate'],
     }
-    include xebia-theforeman::install
+    class {'xebia-theforeman::install':
+		require => Class['xebia-theforeman::prerequisites'],
+	}
+	
     include xebia-theforeman::service
 }
 

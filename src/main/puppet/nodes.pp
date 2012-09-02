@@ -65,15 +65,33 @@ node /^puppet.*$/{
 		temporary_directory => '/home/vagrant',
 	}
 	
-	#class{'xebia-theforeman':
-	#	require => [Class['xebia-mysqld'],Class['xebia-gem']],
-	#	temporary_directory => '/home/vagrant',
-	#}
-	
 	xebia-mysqld::config::mysqldb{'vagrant':
 		user => vagrant,
 		password => vagrant,
 		host => '%'
 	}	
 	
+}
+
+node /^foreman.*$/{
+	stage { pre: before => Stage[main] }
+
+	class{'init':
+		stage => pre
+	}
+
+	include xebia-utils
+	include xebia-mysqld
+
+    xebia-mysqld::config::mysqldb{'vagrant':
+        user => vagrant,
+        password => vagrant,
+        host => '%'
+    }
+
+	class{'xebia-theforeman':
+		require => Class['xebia-mysqld'],
+		temporary_directory => '/home/vagrant',
+	}
+
 }

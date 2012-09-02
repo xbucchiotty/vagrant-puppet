@@ -1,28 +1,15 @@
 class xebia-theforeman::install(){
 
-    package {'foreman':
-        ensure => present,
-        require => [Class['xebia-theforeman::prerequisites'],Xebia-utils::Aptget::Update['theforeman-aptgetupdate']]
-    }
-
     package {'foreman-mysql':
         ensure => present,
         notify => Exec['create mysql foreman user'],
-        require => Package['foreman'],
-    }
-
-    package {'bind9':
-        ensure => present,
-    }
-
-    package {'tftpd-hpa':
-        ensure => present,
+        require => [Class['xebia-theforeman::prerequisites'],Xebia-utils::Aptget::Update['foreman-aptgetupdate']]
     }
 
     file{'/etc/foreman/database.yml':
         ensure => present,
         source => 'puppet:///modules/xebia-theforeman/database.yml',
-        require => Package['foreman-mysql'],
+        require => Package['foreman-sqlite3'],
     }
 
     exec{'create mysql foreman user':
